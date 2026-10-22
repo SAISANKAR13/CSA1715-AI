@@ -1,0 +1,39 @@
+from typing import Dict, List, Set
+
+# Define the graph as an adjacency list
+graph: Dict[str, List[str]] = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+def dfs(graph: Dict[str, List[str]], start: str, visited: Set[str] = None) -> Set[str]:
+    """
+    Depth-First Search (DFS) traversal of a graph.
+    
+    Args:
+        graph (dict): Adjacency list representation of the graph
+        start (str): Starting node
+        visited (set): Set of visited nodes
+    
+    Returns:
+        set: All visited nodes reachable from the start
+    """
+    if visited is None:
+        visited = set()
+
+    visited.add(start)  # mark the node as visited
+
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)  # recursively visit unvisited neighbors
+
+    return visited
+
+
+if __name__ == "__main__":
+    result = dfs(graph, 'A')
+    print("Nodes visited in DFS:", result)

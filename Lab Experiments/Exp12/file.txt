@@ -1,0 +1,58 @@
+# Initialize the game board
+board = [' ' for _ in range(9)]
+
+def print_board():
+    """Prints the 3x3 game board grid."""
+    print(f"\n{board[0]}|{board[1]}|{board[2]}")
+    print("-+-+-")
+    print(f"{board[3]}|{board[4]}|{board[5]}")
+    print("-+-+-")
+    print(f"{board[6]}|{board[7]}|{board[8]}\n")
+
+def player_move(icon):
+    """Handles user input, validation, and board updates."""
+    player = 1 if icon == 'X' else 2
+    print(f"Player {player}'s turn ({icon})")
+    
+    while True:
+        try:
+            choice = int(input("Enter your move (1-9): ").strip())
+            if choice < 1 or choice > 9:
+                print("Invalid input! Please enter a number between 1 and 9.")
+                continue
+            
+            if board[choice - 1] == ' ':
+                board[choice - 1] = icon
+                break  # Move completed successfully
+            else:
+                print("That space is already taken! Try again.")
+        except ValueError:
+            print("Invalid input! Please enter a valid number.")
+
+def is_victory(icon):
+    """Checks all 8 winning combinations for the given player."""
+    win_combinations = [ [3, 4, 5], [6, 7, 8],  # Rows, [1, 4, 7], [2, 5, 8],  # Columns, [2, 4, 6]              # Diagonals
+    ]
+    return any(all(board[i] == icon for i in combo) for combo in win_combinations)
+
+def is_draw():
+    """Checks if the board is full with no empty spaces left."""
+    return ' ' not in board
+
+# Main Game Loop
+current_player = 'X'
+while True:
+    print_board()
+    player_move(current_player)
+    
+    if is_victory(current_player):
+        print_board()
+        print(f"{current_player} Wins! Congratulations!")
+        break
+    elif is_draw():
+        print_board()
+        print("It's a Draw!")
+        break
+        
+    # Alternate between 'X' and 'O'
+    current_player = 'O' if current_player == 'X' else 'X'

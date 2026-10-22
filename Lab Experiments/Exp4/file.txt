@@ -1,0 +1,42 @@
+from itertools import permutations
+
+def solve_cryptarithmetic(puzzle):
+    # Extract words properly
+    left, right = puzzle.split("=")
+    left_words = [w.strip() for w in left.split("+")]
+    right_word = right.strip()
+
+    # Collect unique letters
+    letters = set("".join(left_words + [right_word]))
+    if len(letters) > 10:
+        return None  # Too many letters for digits
+
+    letters = list(letters)
+
+    for perm in permutations(range(10), len(letters)):
+        mapping = dict(zip(letters, perm))
+
+        # Check leading zeros
+        if any(mapping[w[0]] == 0 for w in left_words + [right_word]):
+            continue
+
+        # Convert words to numbers
+        def word_to_num(word):
+            return int("".join(str(mapping[c]) for c in word))
+
+        left_sum = sum(word_to_num(w) for w in left_words)
+        right_val = word_to_num(right_word)
+
+        if left_sum == right_val:
+            return mapping
+
+    return None
+
+# Example usage
+puzzle = "SEND + MORE = MONEY"
+mapping = solve_cryptarithmetic(puzzle)
+if mapping:
+    print("Solution mapping:", mapping)
+    print("Verification:", sum(int("".join(str(mapping[c]) for c in w)) for w in ["SEND","MORE"]), "=", int("".join(str(mapping[c]) for c in "MONEY")))
+else:
+    print("No solution found.")

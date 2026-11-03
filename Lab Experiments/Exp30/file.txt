@@ -1,0 +1,36 @@
+:- dynamic(fact/1).
+
+% Initial Working Memory Facts (Set up for Tiger)
+fact(has_hair). 
+fact(eats_meat). 
+fact(tawny_colour). 
+fact(black_stripes).   
+
+% Production Rules Base
+rule(r1, [has_hair],                           mammal). 
+rule(r2, [gives_milk],                         mammal). 
+rule(r3, [mammal, eats_meat],                  carnivore). 
+rule(r4, [carnivore, tawny_colour, dark_spots],    cheetah). 
+rule(r5, [carnivore, tawny_colour, black_stripes], tiger).   
+
+% Standard Backward Chaining Engine
+bc(Goal) :- fact(Goal). 
+bc(Goal) :- rule(_, Conditions, Goal), bc_all(Conditions).   
+
+bc_all([]). 
+bc_all([G|Rest]) :- bc(G), bc_all(Rest).   
+
+% Verbose Backward Chaining Engine (Prints the proof tree trace)
+prove(Goal, Depth) :-     
+    tab(Depth), format('Proving ~w~n', [Goal]),     
+    (   fact(Goal)     
+    ->  tab(Depth), format('  ~w is a known fact~n', [Goal])     
+    ;   rule(Id, Conditions, Goal),         
+        tab(Depth), format('  using rule ~w~n', [Id]),         
+        D1 is Depth + 2,         
+        prove_all(Conditions, D1),         
+        !     
+    ).   
+
+prove_all([], _). 
+prove_all([G|Rest], D) :- prove(G, D), prove_all(Rest, D).

@@ -1,0 +1,19 @@
+patient(ravi,   diabetes). 
+patient(meena,  hypertension). 
+patient(kumar,  anaemia). 
+patient(divya,  obesity). 
+patient(arun,   diabetes).   
+
+diet(diabetes,     'whole grains, oats, green vegetables, pulses, nuts'). 
+diet(hypertension, 'fruits, vegetables, low-fat dairy, banana, low-salt meals'). 
+diet(anaemia,      'spinach, beetroot, dates, jaggery, pulses, citrus fruits'). 
+diet(obesity,      'salads, sprouts, fibre-rich foods, plenty of water, fruits').   
+
+avoid(diabetes,     'sweets, sugary drinks, white rice in excess'). 
+avoid(hypertension, 'pickles, papad, processed food, excess salt'). 
+avoid(anaemia,      'tea or coffee immediately after meals'). 
+avoid(obesity,      'fried food, fast food, sugary beverages').   
+
+suggest(P, Diet) :- patient(P, D), diet(D, Diet). 
+advice(P, Eat, Avoid) :- patient(P, D), diet(D, Eat), avoid(D, Avoid). 
+with_disease(D, P) :- patient(P, D).

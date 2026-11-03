@@ -1,0 +1,25 @@
+:- dynamic(fact/1).   % <--- Parentheses fixed here!
+
+% Initial Working Memory Facts
+fact(has_hair). 
+fact(eats_meat). 
+fact(tawny_colour). 
+fact(dark_spots).   
+
+% Production Rules Base
+rule(r1, [has_hair],                          mammal). 
+rule(r2, [gives_milk],                        mammal). 
+rule(r3, [mammal, eats_meat],                 carnivore). 
+rule(r4, [carnivore, tawny_colour, dark_spots],   cheetah). 
+rule(r5, [carnivore, tawny_colour, black_stripes], tiger).   
+
+% Forward Chaining Inference Engine
+forward :-     
+    rule(Id, Conditions, Conclusion),     
+    \+ fact(Conclusion),     
+    forall(member(C, Conditions), fact(C)),     
+    !,     
+    assertz(fact(Conclusion)),     
+    format('Rule ~w fired: derived ~w~n', [Id, Conclusion]),     
+    forward. 
+forward.

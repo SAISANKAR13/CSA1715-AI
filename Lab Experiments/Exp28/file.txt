@@ -1,0 +1,31 @@
+% Patient Symptoms
+symptom(ravi,  fever).    
+symptom(ravi,  cough).     
+symptom(ravi, body_pain). 
+symptom(meena, sneezing). 
+symptom(meena, runny_nose). 
+symptom(meena, sore_throat). 
+symptom(kumar, fever).    
+symptom(kumar, chills).    
+symptom(kumar, sweating). 
+symptom(kumar, headache).   
+
+% Disease symptom signatures
+disease(flu,         [fever, cough, body_pain]). 
+disease(common_cold, [sneezing, runny_nose, sore_throat]). 
+disease(malaria,     [fever, chills, sweating]). 
+disease(typhoid,     [fever, headache, stomach_pain]).   
+
+% Medical Advice
+advice(flu,         'rest, fluids and consult a doctor if fever persists'). 
+advice(common_cold, 'rest, warm fluids and steam inhalation'). 
+advice(malaria,     'consult a doctor immediately for a blood test'). 
+advice(typhoid,     'consult a doctor immediately for a Widal test').   
+
+% Helper Rule: Recursively verify a patient has all listed symptoms
+has_all(_, []). 
+has_all(P, [S|T]) :- symptom(P, S), has_all(P, T).   
+
+% Diagnosis and Reporting Rules
+diagnose(P, D) :- disease(D, Symptoms), has_all(P, Symptoms). 
+report(P) :- diagnose(P, D), advice(D, A), format('~w may have ~w. Advice: ~w~n', [P, D, A]).

@@ -1,0 +1,21 @@
+pos(atdoor). 
+pos(atwindow). 
+pos(middle). 
+
+% move(State Before, Action, State After)
+move(state(middle, in, middle, hasnot), grasp, state(middle, onbox, middle, has)). 
+% Note: Check your action parameters to match state structure.
+move(state(P, onfloor, P, H), climb, state(P, onbox, P, H)). 
+move(state(P1, onfloor, P1, H), push(P1, P2), state(P2, onfloor, P2, H)) :- 
+    pos(P2), P1 \= P2. 
+move(state(P1, onfloor, B, H), walk(P1, P2), state(P2, onfloor, B, H)) :- 
+    pos(P2), P1 \= P2. 
+
+plan(state(_, _, _, has), []). 
+plan(S1, [Action|Rest]) :- 
+    move(S1, Action, S2), 
+    plan(S2, Rest). 
+
+solve(Start, Plan) :- 
+    length(Plan, _), 
+    plan(Start, Plan), !.

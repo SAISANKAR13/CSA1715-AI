@@ -1,0 +1,14 @@
+% planet(Name, PositionFromSun, Type, NumberOfMoons) 
+planet(mercury, 1, rocky, 0). 
+planet(venus,   2, rocky, 0). 
+planet(earth,   3, rocky, 1). 
+planet(mars,    4, rocky, 2). 
+planet(jupiter, 5, gas_giant, 95). 
+planet(saturn,  6, gas_giant, 146). 
+planet(uranus,  7, ice_giant, 28). 
+planet(neptune, 8, ice_giant, 16).   
+
+gas_giant(P) :- planet(P, _, gas_giant, _). 
+has_moons(P) :- planet(P, _, _, M), M > 0. 
+closer_than(P1, P2) :- planet(P1, A, _, _), planet(P2, B, _, _), A < B. 
+rocky_planets(L) :- findall(P, planet(P, _, rocky, _), L).

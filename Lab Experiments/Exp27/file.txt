@@ -1,0 +1,44 @@
+% Graph Edges
+edge(a, b).  edge(a, c). 
+edge(b, d).  edge(b, e). 
+edge(c, f).  
+edge(e, g).  edge(f, g).   
+
+% Heuristic Values h(Node, Value)
+h(a, 7).  h(b, 5).  h(c, 4).  h(d, 6).  h(e, 2).  h(f, 3).  h(g, 0).   
+
+% Main Search Predicate
+best_first(Start, Goal, Path) :-     
+    bf([[Start]], Goal, RevPath),     
+    reverse(RevPath, Path).   
+
+% Base Case: Goal found
+bf([[Goal|Rest]|_], Goal, [Goal|Rest]) :- !. 
+
+% Recursive Case: Expand best path
+bf([[N|Rest]|Others], Goal, Path) :-     
+    findall([M, N|Rest],             
+            ( edge(N, M), \+ member(M, [N|Rest]) ),             
+            Children),     
+    append(Others, Children, All),     
+    sort_by_h(All, Sorted),     
+    bf(Sorted, Goal, Path).   
+
+% Sorting paths based on heuristic value of their head node
+sort_by_h(Paths, Sorted) :-     
+    map_list_to_pairs_compat(path_h, Paths, Pairs),     
+    keysort(Pairs, SortedPairs),     
+    pairs_values_compat(SortedPairs, Sorted).   
+
+path_h([N|_], H) :- h(N, H).
+
+% --- GNU Prolog Compatibility Helpers ---
+map_list_to_pairs_compat(_, [], []).
+map_list_to_pairs_compat(Pred, [H|T], [Key-H|Pairs]) :-
+    Goal =.. [Pred, H, Key],
+    call(Goal),
+    map_list_to_pairs_compat(Pred, T, Pairs).
+
+pairs_values_compat([], []).
+pairs_values_compat([_-V|T], [V|Values]) :-
+    pairs_values_compat(T, Values).

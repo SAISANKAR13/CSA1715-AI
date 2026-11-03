@@ -1,1 +1,15 @@
+subject(csa17, 'Artificial Intelligence'). 
+subject(csa07, 'Computer Networks'). 
+subject(dsa03, 'Natural Language Processing'). 
+teaches(jai, csa17). 
+teaches(meena, csa07). 
+teaches(ravi, dsa03). 
+studies(anu, csa17). 
+studies(anu, dsa03). 
+studies(kiran, csa17). 
+studies(latha, csa07). 
 
+taught_by(Student, Teacher) :- studies(Student, Code), teaches(Teacher, Code). 
+students_of(Teacher, Student) :- teaches(Teacher, Code), studies(Student, Code). 
+classmates(S1, S2) :- studies(S1, Code), studies(S2, Code), S1 \= S2. 
+subject_name_of(Student, Name) :- studies(Student, Code), subject(Code, Name).

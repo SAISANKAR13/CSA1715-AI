@@ -1,0 +1,50 @@
+import numpy as np
+np.random.seed(0)
+SIZE, GOAL, PITS = 4, (3, 3), {(1, 1), (2, 3)}
+ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)] # up, down, left, right
+ARROWS = ['^', 'v', '<', '>']
+
+def step(state, a):
+    r, c = state
+    nr = min(max(r + ACTIONS[a][0], 0), SIZE - 1)
+    nc = min(max(c + ACTIONS[a][1], 0), SIZE - 1)
+    new = (nr, nc)
+    if new == GOAL:
+        return new, 10, True
+    if new in PITS:
+        return new, -10, True
+    return new, -1, False
+
+Q = np.zeros((SIZE, SIZE, 4))
+alpha, gamma, epsilon = 0.1, 0.9, 0.2
+
+for episode in range(3000):
+    s, done = (0, 0), False
+    while not done:
+        # Epsilon-greedy action selection
+        if np.random.rand() < epsilon:
+            a = np.random.randint(4)
+        else:
+            a = np.argmax(Q[s[0], s[1]])
+        
+        # Take step
+        s_next, reward, done = step(s, a)
+        
+        # Q-value update
+        best_next_q = np.max(Q[s_next[0], s_next[1]])
+        Q[s[0], s[1], a] += alpha * (reward + gamma * best_next_q - Q[s[0], s[1], a])
+        
+        s = s_next
+
+print("Training complete! Learned Q-table policy representation:")
+policy = np.zeros((SIZE, SIZE), dtype=object)
+for r in range(SIZE):
+    for c in range(SIZE):
+        if (r, c) == GOAL:
+            policy[r, c] = 'G'
+        elif (r, c) in PITS:
+            policy[r, c] = 'P'
+        else:
+            best_action = np.argmax(Q[r, c])
+            policy[r, c] = ARROWS[best_action]
+print(policy)

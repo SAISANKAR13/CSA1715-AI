@@ -1,0 +1,28 @@
+from itertools import product
+P_R = {True: 0.2, False: 0.8}
+P_S_given_R = {True: {True: 0.01, False: 0.99},
+ False: {True: 0.40, False: 0.60}}
+P_G_given_SR = {(True, True): 0.99, (True, False): 0.90,
+ (False, True): 0.80, (False, False): 0.00} # P(G = True | S, R)
+def joint(r, s, g):
+ pg = P_G_given_SR[(s, r)]
+ return P_R[r] * P_S_given_R[r][s] * (pg if g else 1 - pg)
+def posterior(query_var, evidence_g):
+ num = {True: 0.0, False: 0.0}
+ for r, s in product([True, False], repeat=2):
+     p = joint(r, s, evidence_g)
+     key = r if query_var == 'R' else s
+     num[key] += p
+ total = sum(num.values())
+ return {k: v / total for k, v in num.items()}
+print("P(GrassWet = True) = %.4f" % sum(joint(r, s, True) for r, s in product([True, False], repeat=2)))
+pr = posterior('R', True)
+ps = posterior('S', True)
+print("P(Rain = True | GrassWet = True) = %.4f" % pr[True])
+print("P(Sprinkler = True | GrassWet = True) = %.4f" % ps[True])
+pr_dry = posterior('R', False)
+print("P(Rain = True | GrassWet = False) = %.4f" % pr_dry[True])
+# The same model with the pgmpy library (pip install pgmpy):
+# from pgmpy.models import BayesianNetwork
+# from pgmpy.factors.discrete import TabularCPD
+# from pgmpy.inference import VariableElimination

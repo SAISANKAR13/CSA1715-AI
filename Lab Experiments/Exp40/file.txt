@@ -1,0 +1,36 @@
+import numpy as np
+
+users = ['Anu', 'Bala', 'Chitra', 'Dev', 'Esha']
+items = ['Movie1', 'Movie2', 'Movie3', 'Movie4', 'Movie5']
+R = np.array([
+    [5, 4, 0, 1, 0],
+    [4, 5, 0, 1, 2],
+    [1, 1, 5, 4, 0],
+    [0, 1, 4, 5, 4],
+    [5, 0, 4, 0, 3],
+], dtype=float)
+
+def cosine(u, v):
+    return u @ v / (np.linalg.norm(u) * np.linalg.norm(v))
+
+sim = np.array([[cosine(R[i], R[j]) for j in range(len(users))] for i in range(len(users))])
+print("User similarity matrix:")
+print(np.round(sim, 2))
+
+def predict(u, i):
+    num = den = 0.0
+    for v in range(len(users)):
+        if v != u and R[v, i] > 0:
+            num += sim[u, v] * R[v, i]
+            den += sim[u, v]
+    return num / den if den else 0.0
+
+def recommend(name):
+    u = users.index(name)
+    scores = [(items[i], predict(u, i)) for i in range(len(items)) if R[u, i] == 0]
+    return sorted(scores, key=lambda x: -x[1])
+
+for name in ('Anu', 'Dev'):
+    print("\nRecommendations for", name)
+    for item, score in recommend(name):
+        print(" %-7s predicted rating %.2f" % (item, score))

@@ -1,0 +1,24 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+texts = [
+ "I loved this movie, it was fantastic", "What a great and wonderful experience",
+ "The food was delicious and the staff were friendly", "Absolutely brilliant, highly recommended",
+ "I am very happy with this product", "Excellent quality and fast delivery",
+ "Terrible movie, a complete waste of time", "The service was awful and the food was cold",
+ "I hate this product, it is broken", "Very disappointing and poor quality",
+ "Worst experience ever, never again", "The staff were rude and unhelpful",
+]
+labels = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
+model = make_pipeline(
+ TfidfVectorizer(lowercase=True, stop_words='english', ngram_range=(1, 2)),
+ LogisticRegression(max_iter=1000),
+)
+model.fit(texts, labels)
+tests = ["The movie was wonderful and I loved it",
+ "This is the worst product, very poor",
+ "Friendly staff and delicious food",
+ "Awful, rude service"]
+for t in tests:
+ p = model.predict_proba([t])[0]
+ print("%-45s -> %-8s (confidence %.2f)" % (t, "Positive" if p[1] > 0.5 else "Negative", max(p)))

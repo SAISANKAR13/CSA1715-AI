@@ -1,0 +1,23 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+faq = {
+ "hello hi hey good morning": "Hello! I am LabBot. Ask me about the AI lab.",
+ "what is artificial intelligence ai": "AI is the science of making machines perform tasks that need human intelligence.",
+ "what is the lab timing": "The AI lab runs from 9 AM to 4 PM on all five lab days.", "how many experiments are there": "There are 50 experiments: 10 programs on each of the 5 days.",
+ "which language is used for the lab": "Python is used for the first half; Prolog is used for logic programming.",
+ "how are marks awarded": "Marks are awarded for record work, the experiment and a viva voce.",
+ "bye goodbye see you": "Goodbye! Best wishes for your lab exam.",
+}
+questions = list(faq.keys())
+answers = list(faq.values())
+vectorizer = TfidfVectorizer(stop_words='english')
+q_vectors = vectorizer.fit_transform(questions)
+def reply(message, threshold=0.2):
+ sims = cosine_similarity(vectorizer.transform([message]), q_vectors)[0]
+ best = sims.argmax()
+ return answers[best] if sims[best] >= threshold else "Sorry, I did not understand. Please rephrase."
+conversation = ["Hi there", "What is AI?", "how many experiments do we have",
+ "Which programming language will we use", "what is the weather", "bye"]
+for msg in conversation:
+ print("You :", msg)
+ print("Bot :", reply(msg), "\n")
